@@ -127,7 +127,7 @@ class Sudo(commands.Cog):
             await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
             return
 
-        if message is not None:
+        if dc_message is not None:
             await ctx.reply(
                 _(ctx, "You must write message as parameter or upload TXT file.")
             )

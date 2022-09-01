@@ -93,7 +93,7 @@ class Sudo(commands.Cog):
     async def sudo_message_edit(
         self, 
         ctx, 
-        channel_id: Union[discord.TextChannel, discord.Thread], 
+        channel_id: int, 
         message_id: int, 
         *, 
         message: str = None
@@ -127,9 +127,9 @@ class Sudo(commands.Cog):
             await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
             return
 
-        if message_id != discord.message:
+        if message is not None:
             await ctx.reply(
-                _(ctx, "Message does not exist!")
+                _(ctx, "You must write message as parameter or upload TXT file.")
             )
             return
 

@@ -129,7 +129,7 @@ class Sudo(commands.Cog):
 
         if dc_message is None:
             await ctx.reply(
-                _(ctx, "You must write message as parameter or upload TXT file.")
+                _(ctx, "Message not exist!.")
             )
             return
 

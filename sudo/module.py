@@ -94,7 +94,7 @@ class Sudo(commands.Cog):
         self, 
         ctx, 
         channel_id: Union[discord.TextChannel, discord.Thread], 
-        message_id: Union[discord.TextChannel, discord.Thread], 
+        message_id: discord.Message, 
         *, 
         message: str = None
     ):

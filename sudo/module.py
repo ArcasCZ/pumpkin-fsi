@@ -94,7 +94,7 @@ class Sudo(commands.Cog):
         self, 
         ctx, 
         channel_id: Union[discord.TextChannel, discord.Thread], 
-        message_id: discord.Message, 
+        message_id: int, 
         *, 
         message: str = None
     ):
@@ -126,8 +126,6 @@ class Sudo(commands.Cog):
         if len(message) > 2000:
             await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
             return
-
-    
 
         await dc_message.edit(content=message)
         await utils.discord.delete_message(ctx.message)

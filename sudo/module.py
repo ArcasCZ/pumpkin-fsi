@@ -129,7 +129,7 @@ class Sudo(commands.Cog):
 
         if dc_message is None:
             await ctx.reply(
-                _(ctx, "Message not exist!.")
+                _(ctx, "Message does not exist!.")
             )
             return
 

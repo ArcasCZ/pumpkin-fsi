@@ -127,7 +127,7 @@ class Sudo(commands.Cog):
             await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
             return
 
-        if message_id is not discord.message:
+        if message_id != discord.message:
             await ctx.reply(
                 _(ctx, "Message does not exist!")
             )

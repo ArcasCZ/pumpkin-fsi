@@ -91,7 +91,12 @@ class Sudo(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @sudo_message_.command(name="edit")
     async def sudo_message_edit(
-        self, ctx, channel_id: int, message_id: int, *, message: str = None
+        self, 
+        ctx, 
+        channel_id: Union[discord.TextChannel, discord.Thread], 
+        message_id: Union[discord.TextChannel, discord.Thread], 
+        *, 
+        message: str = None
     ):
         """Edit bot message.
 
@@ -110,6 +115,7 @@ class Sudo(commands.Cog):
         if dc_message is None:
             ctx.reply(_(ctx, "Message with ID {id} not found.").format(id=message_id))
 
+
         message = await self._get_message(ctx, message)
         if message is None:
             await ctx.reply(
@@ -121,8 +127,7 @@ class Sudo(commands.Cog):
             await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
             return
 
-        if message is None:
-            ctx.reply(_(ctx, "Message with ID {id} not found.").format(id=message_id))
+    
 
         await dc_message.edit(content=message)
         await utils.discord.delete_message(ctx.message)

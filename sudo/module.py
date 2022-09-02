@@ -91,12 +91,7 @@ class Sudo(commands.Cog):
     @check.acl2(check.ACLevel.SUBMOD)
     @sudo_message_.command(name="edit")
     async def sudo_message_edit(
-        self, 
-        ctx, 
-        channel_id: int, 
-        message_id: int, 
-        *, 
-        message: str = None
+        self, ctx, channel_id: int, message_id: int, *, message: str = None
     ):
         """Edit bot message.
 
@@ -115,7 +110,6 @@ class Sudo(commands.Cog):
         if dc_message is None:
             ctx.reply(_(ctx, "Message with ID {id} not found.").format(id=message_id))
 
-
         message = await self._get_message(ctx, message)
         if message is None:
             await ctx.reply(
@@ -128,9 +122,7 @@ class Sudo(commands.Cog):
             return
 
         if dc_message is None:
-            await ctx.reply(
-                _(ctx, "Message does not exist.")
-            )
+            await ctx.reply(_(ctx, "Message does not exist."))
             return
 
         await dc_message.edit(content=message)

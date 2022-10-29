@@ -178,6 +178,27 @@ msgstr Něco se pokazilo.
 msgid Roles and channels successfuly removed.
 msgstr Role a kanály úspěšně odebrány.
 
+msgid Members with forbidden role
+msgstr Členové se zakázanou rolí
+
+msgid REMOVE ROLE FROM MEMBERS
+msgstr ODSTRANĚNÍ ROLE ČLENŮM
+
+msgid Are you sure you want from users with role: {role_base} remove role: {role_remove}?
+msgstr Opravdu chceš členům s rolí: {role_base} odebrat roli: {role_remove}?
+
+msgid Confirmation timed out.
+msgstr Čas na potvrzení vypršel.
+
+msgid Successfully removed selected role.
+msgstr Role úspěšně odebrány.
+
+msgid Aborted.
+msgstr Zrušeno.
+
+msgid No member with this role
+msgstr Žádný člen s touto rolí
+
 msgid Channel **{channel}** marked as word soccer.
 msgstr Kanál **{channel}** označen jako slovní fotbal.
 
@@ -219,6 +240,9 @@ msgstr Zpráva musí být kratší jak 2000 znaků.
 
 msgid Your message was sent into channel {channel}
 msgstr Tvá zpráva byla odeslána do kanálu {channel}
+
+msgid Message does not exist.
+msgstr
 
 msgid Your message {id} in channel {channel} was edited.
 msgstr Tvá zpráva s ID {id} v kanálu {channel} byla upravena.

@@ -62,18 +62,18 @@ class RoleManager(commands.Cog):
         """
         List users to remove selected role from members with base role.
         """
-        name_list = RoleManager._get_intersection(role_base, role_remove)
+        member_list = RoleManager._get_intersection(role_base, role_remove)
 
-        if name_list:
+        if member_list:
 
             title = _(ctx, "Members with forbidden role")
 
-            member_list = list(str(member) for member in name_list)
+            name_list = list(str(member) for member in member_list)
 
             embeds = RoleManager._create_embeds(
                 ctx=ctx,
                 title=title,
-                description=member_list,
+                description=name_list,
             )
 
             scrollable_embed = ScrollableEmbed(ctx, embeds)
@@ -90,9 +90,9 @@ class RoleManager(commands.Cog):
         """
         Execute command to remove selected role from members with base role.
         """
-        name_list = RoleManager._get_intersection(role_base, role_remove)
+        member_list = RoleManager._get_intersection(role_base, role_remove)
 
-        if name_list:
+        if member_list:
 
             embed = discord.Embed(
                 title=_(ctx, "REMOVE ROLE FROM MEMBERS"),
@@ -105,7 +105,7 @@ class RoleManager(commands.Cog):
             view = ConfirmView(ctx, embed)
             value = await view.send()
             if value:
-                for member in name_list:
+                for member in member_list:
                     await member.remove_roles(role_remove)
 
                 await ctx.send(_(ctx, "Successfully removed selected role."))

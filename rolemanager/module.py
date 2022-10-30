@@ -9,11 +9,11 @@ from pie.utils.objects import ConfirmView, ScrollableEmbed
 _ = i18n.Translator("modules/fsi").translate
 
 
-# HELPER FUNCTIONS
 class RoleManager(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    # HELPER FUNCTIONS
     def _create_embeds(ctx, title: str, description: str) -> List[discord.Embed]:
         elements = []
         """Create embed for member list.
@@ -46,8 +46,6 @@ class RoleManager(commands.Cog):
     @check.acl2(check.ACLevel.MOD)
     async def rolemanager_(self, ctx):
         """
-        Preview and remove selected roles from members with specified based role.
-
         preview [base_role] [role_to_remove]
         execute [base_role] [role_to_remove]
 
@@ -62,14 +60,15 @@ class RoleManager(commands.Cog):
         """
         List all users with base role and selected role to remove.
         """
+        base_members = set(role_base.members)
+        remove_members = set(role_remove.members)
+        role_intersection = base_members & remove_members
 
-        if set(role_base.members) & set(role_remove.members):
+        if role_intersection is not None:
 
             title = _(ctx, "Members with forbidden role")
 
-            member_list = list(
-                (str(member) for member in role_base.members and role_remove.members)
-            )
+            member_list = list((str(member) for member in role_intersection))
 
             embeds = RoleManager._create_embeds(
                 ctx=ctx,
@@ -77,8 +76,11 @@ class RoleManager(commands.Cog):
                 description=member_list,
             )
 
-        scrollable_embed = ScrollableEmbed(ctx, embeds)
-        await scrollable_embed.scroll()
+            scrollable_embed = ScrollableEmbed(ctx, embeds)
+            await scrollable_embed.scroll()
+
+        else:
+            await ctx.reply(_(ctx, "No member with this role"))
 
     @check.acl2(check.ACLevel.MOD)
     @rolemanager_.command(name="execute")
@@ -88,7 +90,11 @@ class RoleManager(commands.Cog):
         """
         Execute command to remove selected role from members with base role.
         """
-        if set(role_base.members) & set(role_remove.members):
+        base_members = set(role_base.members)
+        remove_members = set(role_remove.members)
+        role_intersection = base_members & remove_members
+
+        if role_intersection is not None:
 
             embed = discord.Embed(
                 title=_(ctx, "REMOVE ROLE FROM MEMBERS"),
@@ -104,7 +110,7 @@ class RoleManager(commands.Cog):
                 await ctx.send(_(ctx, "Confirmation timed out."))
             elif value:
 
-                for member in set(role_base.members) & set(role_remove.members):
+                for member in role_intersection:
                     await member.remove_roles(role_remove)
 
                 await ctx.send(_(ctx, "Successfully removed selected role."))

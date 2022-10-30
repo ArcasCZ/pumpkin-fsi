@@ -65,7 +65,6 @@ class RoleManager(commands.Cog):
         member_list = RoleManager._get_intersection(role_base, role_remove)
 
         if member_list:
-
             title = _(ctx, "Members with forbidden role")
 
             name_list = list(str(member) for member in member_list)
@@ -93,7 +92,6 @@ class RoleManager(commands.Cog):
         member_list = RoleManager._get_intersection(role_base, role_remove)
 
         if member_list:
-
             embed = discord.Embed(
                 title=_(ctx, "REMOVE ROLE FROM MEMBERS"),
                 description=_(

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 
 import discord
 from discord.ext import commands
@@ -33,18 +33,15 @@ class RoleManager(commands.Cog):
                 description="\n".join(description[i : i + chunk_size]),
             )
 
-            list().append(description[i : i + chunk_size])
-
             elements.append(page)
 
         return elements
 
-    def _get_intersection(role_base, role_remove):
+    def _get_intersection(role_base, role_remove) -> Set[discord.Member]:
         base_members = set(role_base.members)
         remove_members = set(role_remove.members)
 
         role_intersection = base_members & remove_members
-
         return role_intersection
 
     # MAIN
@@ -53,9 +50,7 @@ class RoleManager(commands.Cog):
     @check.acl2(check.ACLevel.MOD)
     async def rolemanager_(self, ctx):
         """
-        preview [base_role] [role_to_remove]
-        execute [base_role] [role_to_remove]
-
+        Preview and remove selected roles from members with specified based role.
         """
         await utils.discord.send_help(ctx)
 
@@ -65,16 +60,15 @@ class RoleManager(commands.Cog):
         self, ctx, role_base: discord.Role, role_remove: discord.Role
     ):
         """
-        List all users with base role and selected role to remove.
+        List users to remove selected role from members with base role.
         """
-        if RoleManager._get_intersection(role_base, role_remove):
+        members_list = RoleManager._get_intersection(role_base, role_remove)
+
+        if members_list:
 
             title = _(ctx, "Members with forbidden role")
 
-            member_list = list(
-                str(member)
-                for member in RoleManager._get_intersection(role_base, role_remove)
-            )
+            member_list = list(str(member) for member in members_list)
 
             embeds = RoleManager._create_embeds(
                 ctx=ctx,
@@ -96,8 +90,9 @@ class RoleManager(commands.Cog):
         """
         Execute command to remove selected role from members with base role.
         """
+        members_list = RoleManager._get_intersection(role_base, role_remove)
 
-        if RoleManager._get_intersection(role_base, role_remove):
+        if members_list:
 
             embed = discord.Embed(
                 title=_(ctx, "REMOVE ROLE FROM MEMBERS"),
@@ -109,11 +104,8 @@ class RoleManager(commands.Cog):
 
             view = ConfirmView(ctx, embed)
             value = await view.send()
-            if value is None:
-                await ctx.send(_(ctx, "Confirmation timed out."))
-            elif value:
-
-                for member in RoleManager._get_intersection(role_base, role_remove):
+            if value:
+                for member in members_list:
                     await member.remove_roles(role_remove)
 
                 await ctx.send(_(ctx, "Successfully removed selected role."))

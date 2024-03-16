@@ -1,8 +1,10 @@
 import tempfile
 
 from typing import Union
+from .objects import MessageModal
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from pie import i18n, logger, utils, check
@@ -11,236 +13,137 @@ _ = i18n.Translator("modules/sudo").translate
 guild_log = logger.Guild.logger()
 
 
-class Sudo(commands.Cog):
+class Sudo(commands.GroupCog, name="sudo"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    message = app_commands.Group(
+        name="message", description="Sends / edits message as this bot."
+    )
+
     # HELPER FUNCTIONS
-    async def _get_message(self, ctx, message: str):
-        if message is not None:
-            return message
-        else:
-            if len(ctx.message.attachments) != 1 or not ctx.message.attachments[
-                0
-            ].filename.lower().endswith("txt"):
-                return None
 
-            data_file = tempfile.TemporaryFile()
-            await ctx.message.attachments[0].save(data_file)
-            data_file.seek(0)
+    async def _get_message(
+        self, utx: i18n.TranslationContext, inter: discord.Interaction, message_url: str
+    ):
+        try:
+            parts = message_url.split("/")
+            guild_id = int(parts[-3])
+            channel_id = int(parts[-2])
+            message_id = int(parts[-1])
+        except (ValueError, IndexError):
+            await inter.response.send_message(
+                _(utx, "Incorrect message URL!"), ephemeral=True
+            )
+            return None
 
-            return data_file.read().decode("utf-8")
+        dc_message: discord.Message = await utils.discord.get_message(
+            self.bot, guild_id, channel_id, message_id
+        )
+
+        if dc_message is None:
+            await inter.response.send_message(
+                _(utx, "Message not found or not reachable!"), ephemeral=True
+            )
+            return None
+
+        return dc_message
 
     # COMMANDS
 
-    @commands.guild_only()
     @check.acl2(check.ACLevel.SUBMOD)
-    @commands.group(name="sudo")
-    async def sudo_(self, ctx):
-        """Do something as this bot."""
-        await utils.discord.send_help(ctx)
-
-    @check.acl2(check.ACLevel.SUBMOD)
-    @sudo_.group(name="message")
-    async def sudo_message_(self, ctx):
-        """Sends / edits message as this bot."""
-        await utils.discord.send_help(ctx)
-
-    @check.acl2(check.ACLevel.SUBMOD)
-    @sudo_message_.command(name="send")
+    @message.command(name="send")
     async def sudo_message_send(
         self,
-        ctx,
+        inter: discord.Interaction,
         channel: Union[discord.TextChannel, discord.Thread],
-        *,
-        message: str = None
     ):
-        """Sends message as this bot.
-
-        Args:
-            channel: Channel mention to send message
-            message: Text message (can be ommited when uploading .txt file)
-        """
-        message = await self._get_message(ctx, message)
-        if message is None:
-            await ctx.reply(
-                _(ctx, "You must write message as parameter or upload TXT file.")
-            )
-            return
-
-        if len(message) > 2000:
-            await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
-            return
-
-        message = await channel.send(
-            message,
-            allowed_mentions=discord.AllowedMentions(
-                everyone=True, users=True, roles=True
-            ),
+        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
+        message_modal = MessageModal(
+            self.bot,
+            title=_(utx, "Send message"),
+            label=_(utx, "Message content:"),
+            channel=channel,
         )
-
-        await utils.discord.delete_message(ctx.message)
-        await ctx.send(
-            _(ctx, "Your message was sent into channel {channel}").format(
-                channel=channel.mention
-            ),
-        )
-        await guild_log.info(
-            ctx.author,
-            ctx.channel,
-            "SUDO sent message with ID {} in channel #{}".format(
-                message.id, message.channel.name
-            ),
-        )
+        await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @sudo_message_.command(name="edit")
+    @message.command(name="edit")
     async def sudo_message_edit(
-        self, ctx, channel_id: int, message_id: int, *, message: str = None
+        self,
+        inter: discord.Interaction,
+        message_url: str,
     ):
-        """Edit bot message.
+        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
+        dc_message: discord.Message = await self._get_message(utx, inter, message_url)
+        if not dc_message:
+            return
 
-        Args:
-            channel: Channel mention to send message, 0 if current channel
-            message_id: ID of edited message
-            message: Text message (can be ommited when uploading .txt file)
-        """
-        if channel_id == 0:
-            channel_id = ctx.channel.id
-
-        dc_message = await utils.discord.get_message(
-            self.bot, ctx.guild.id, channel_id, message_id
-        )
-
-        if dc_message is None:
-            ctx.reply(_(ctx, "Message with ID {id} not found.").format(id=message_id))
-
-        message = await self._get_message(ctx, message)
-        if message is None:
-            await ctx.reply(
-                _(ctx, "You must write message as parameter or upload TXT file.")
+        if len(dc_message.content) > 2000:
+            await inter.response.send_message(
+                _(utx, "Message content longer than 2000 characters!"), ephemeral=True
             )
             return
-
-        if len(message) > 2000:
-            await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
-            return
-
-        if dc_message is None:
-            await ctx.reply(_(ctx, "Message does not exist."))
-            return
-
-        await dc_message.edit(
-            content=message,
-            allowed_mentions=discord.AllowedMentions(
-                everyone=True, users=True, roles=True
-            ),
+        message_modal = MessageModal(
+            self.bot,
+            title=_(utx, "Edit message"),
+            label=_(utx, "Message content:"),
+            message=dc_message,
+            edit=True,
         )
-        await utils.discord.delete_message(ctx.message)
-        await ctx.send(
-            _(ctx, "Your message {id} in channel {channel} was edited.").format(
-                id=message_id, channel=dc_message.channel.mention
-            ),
-        )
-
-        await guild_log.info(
-            ctx.author,
-            ctx.channel,
-            "SUDO edited message with ID {} in channel #{}".format(
-                message_id, dc_message.channel.name
-            ),
-        )
+        await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @sudo_message_.command(name="download")
-    async def sudo_message_download(self, ctx, channel_id: int, message_id: int):
-        """Downloads message to file.
+    @message.command(name="resend")
+    async def sudo_message_resend(
+        self,
+        inter: discord.Interaction,
+        channel: Union[discord.TextChannel, discord.Thread],
+        message_url: str,
+    ):
+        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
+        dc_message: discord.Message = await self._get_message(utx, inter, message_url)
+        if not dc_message:
+            return
 
-        Args:
-            channel: Channel ID to send message, 0 if current channel
-            message_id: ID of downloaded message
-        """
-        if channel_id == 0:
-            channel_id = ctx.channel.id
-
-        dc_message = await utils.discord.get_message(
-            self.bot, ctx.guild.id, channel_id, message_id
+        if len(dc_message.content) > 2000:
+            await inter.response.send_message(
+                _(utx, "Message content longer than 2000 characters!"), ephemeral=True
+            )
+            return
+        message_modal = MessageModal(
+            self.bot,
+            title=_(utx, "Edit message"),
+            label=_(utx, "Message content:"),
+            message=dc_message,
+            channel=channel,
         )
+        await inter.response.send_modal(message_modal)
 
-        if dc_message is None:
-            ctx.reply(_(ctx, "Message with ID {id} not found.").format(id=message_id))
+    @check.acl2(check.ACLevel.SUBMOD)
+    @message.command(name="download")
+    async def sudo_message_download(self, inter: discord.Interaction, message_url: str):
+        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
+        dc_message: discord.Message = await self._get_message(utx, inter, message_url)
+
+        if not dc_message:
+            return
 
         file = tempfile.TemporaryFile(mode="w+")
 
         file.write(dc_message.content)
 
         filename = "message-{channel}-{message}.txt".format(
-            channel=channel_id, message=dc_message.id
+            channel=dc_message.channel.name, message=dc_message.id
         )
 
         file.seek(0)
-        await ctx.reply(
-            _(ctx, "Message exported to TXT."),
+        await inter.response.send_message(
+            _(utx, "Message exported to TXT."),
             file=discord.File(fp=file, filename=filename),
+            ephemeral=True,
         )
         file.close()
-
-    @check.acl2(check.ACLevel.SUBMOD)
-    @sudo_message_.command(name="append")
-    async def sudo_message_append(
-        self, ctx, channel_id: int, message_id: int, *, message: str = None
-    ):
-        """Append to bot message.
-
-        Args:
-            channel: Channel ID to send message, 0 if current channel
-            message_id: ID of edited message
-            message: Appended text (can be ommited when uploading .txt file)
-        """
-        if channel_id == 0:
-            channel_id = ctx.channel.id
-
-        dc_message = await utils.discord.get_message(
-            self.bot, ctx.guild.id, channel_id, message_id
-        )
-
-        if dc_message is None:
-            ctx.reply(_(ctx, "Message with ID {id} not found.").format(id=message_id))
-
-        message = await self._get_message(ctx, message)
-        if message is None:
-            await ctx.reply(
-                _(ctx, "You must write message as parameter or upload TXT file.")
-            )
-            return
-
-        message = dc_message.content + message
-
-        if message is None:
-            await ctx.reply(
-                _(ctx, "You must write message as parameter or upload TXT file.")
-            )
-            return
-
-        if len(message) > 2000:
-            await ctx.reply(_(ctx, "Message must be shorter than 2000 characters."))
-            return
-
-        await dc_message.edit(content=message)
-        await utils.discord.delete_message(ctx.message)
-        await ctx.send(
-            _(ctx, "Your message {id} in channel {channel} was edited.").format(
-                id=message_id, channel=dc_message.channel.mention
-            ),
-        )
-
-        await guild_log.info(
-            ctx.author,
-            ctx.channel,
-            "SUDO edited message with ID {} in channel #{}".format(
-                message_id, dc_message.channel.name
-            ),
-        )
 
 
 async def setup(bot) -> None:

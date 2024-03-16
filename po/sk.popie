@@ -241,6 +241,9 @@ msgstr
 msgid Message content:
 msgstr
 
+msgid Message is not sent by this bot and can't be edited!
+msgstr
+
 msgid Message content longer than 2000 characters!
 msgstr
 

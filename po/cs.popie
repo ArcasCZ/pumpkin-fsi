@@ -241,6 +241,9 @@ msgstr Odeslat zprávu
 msgid Message content:
 msgstr Obsah zprávy:
 
+msgid Message is not sent by this bot and can't be edited!
+msgstr Zpráva nebyla odeslána tímto botem a nelze ji upravit!
+
 msgid Message content longer than 2000 characters!
 msgstr Obsah zprávy je delší jak 2000 znaků!
 

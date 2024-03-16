@@ -78,6 +78,13 @@ class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions 
         if not dc_message:
             return
 
+        if dc_message.author != self.bot.user:
+            await inter.response.send_message(
+                _(utx, "Message is not sent by this bot and can't be edited!"),
+                ephemeral=True,
+            )
+            return
+
         if len(dc_message.content) > 2000:
             await inter.response.send_message(
                 _(utx, "Message content longer than 2000 characters!"), ephemeral=True

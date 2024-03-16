@@ -7,10 +7,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from pie import i18n, logger, utils, check
+from pie import i18n, utils, check
 
 _ = i18n.Translator("modules/sudo").translate
-guild_log = logger.Guild.logger()
 
 
 class Sudo(commands.GroupCog, name="sudo"):

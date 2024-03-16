@@ -12,7 +12,9 @@ from pie import i18n, utils, check
 _ = i18n.Translator("modules/sudo").translate
 
 
-class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions as bot."):
+class Sudo(
+    commands.GroupCog, name="sudo", description="Perform certain actions as bot."
+):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -52,6 +54,7 @@ class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions 
 
     @check.acl2(check.ACLevel.SUBMOD)
     @message.command(name="send", description="Send message to the channel as the bot.")
+    @app_commands.describe(channel="Channel to receive the message.")
     async def sudo_message_send(
         self,
         inter: discord.Interaction,
@@ -68,6 +71,7 @@ class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions 
 
     @check.acl2(check.ACLevel.SUBMOD)
     @message.command(name="edit", description="Edit bot's message.")
+    @app_commands.describe(message_url="The URL of the message to edit.")
     async def sudo_message_edit(
         self,
         inter: discord.Interaction,
@@ -100,7 +104,11 @@ class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions 
         await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @message.command(name="resend", description="Re-sends message as the bot into specified channel.")
+    @message.command(
+        name="resend", description="Re-sends message as the bot into specified channel."
+    )
+    @app_commands.describe(channel="Channel to receive the message.")
+    @app_commands.describe(message_url="The URL of the message to re-send.")
     async def sudo_message_resend(
         self,
         inter: discord.Interaction,
@@ -127,7 +135,10 @@ class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions 
         await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @message.command(name="download", description="Exports message content as TXT file.")
+    @message.command(
+        name="download", description="Exports message content as TXT file."
+    )
+    @app_commands.describe(message_url="The URL of the message to export.")
     async def sudo_message_download(self, inter: discord.Interaction, message_url: str):
         utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
         dc_message: discord.Message = await self._get_message(utx, inter, message_url)

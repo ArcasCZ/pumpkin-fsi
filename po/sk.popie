@@ -229,22 +229,31 @@ msgstr
 msgid Previously used:
 msgstr
 
-msgid You must write message as parameter or upload TXT file.
+msgid Incorrect message URL!
 msgstr
 
-msgid Message must be shorter than 2000 characters.
+msgid Message not found or not reachable!
 msgstr
 
-msgid Your message was sent into channel {channel}
+msgid Send message
 msgstr
 
-msgid Message does not exist.
+msgid Message content:
 msgstr
 
-msgid Your message {id} in channel {channel} was edited.
+msgid Message content longer than 2000 characters!
+msgstr
+
+msgid Edit message
 msgstr
 
 msgid Message exported to TXT.
+msgstr
+
+msgid Message edited in {channel}!
+msgstr
+
+msgid Message sent to {channel}!
 msgstr
 
 msgid (GLOBAL)

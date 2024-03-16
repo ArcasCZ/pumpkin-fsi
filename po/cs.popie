@@ -229,23 +229,32 @@ msgstr Slovo **{word}** bylo již použito v posledních {limit} zprávách!
 msgid Previously used:
 msgstr Předchozí použití:
 
-msgid You must write message as parameter or upload TXT file.
-msgstr Musíš napsat zprávu jako parametr nebo nahrát TXT soubor.
+msgid Incorrect message URL!
+msgstr Špatná URL zprávy!
 
-msgid Message must be shorter than 2000 characters.
-msgstr Zpráva musí být kratší jak 2000 znaků.
+msgid Message not found or not reachable!
+msgstr Zpráva nenalezena nebo není dostupná!
 
-msgid Your message was sent into channel {channel}
-msgstr Tvá zpráva byla odeslána do kanálu {channel}
+msgid Send message
+msgstr Odeslat zprávu
 
-msgid Message does not exist.
-msgstr
+msgid Message content:
+msgstr Obsah zprávy:
 
-msgid Your message {id} in channel {channel} was edited.
-msgstr Tvá zpráva s ID {id} v kanálu {channel} byla upravena.
+msgid Message content longer than 2000 characters!
+msgstr Obsah zprávy je delší jak 2000 znaků!
+
+msgid Edit message
+msgstr Upravit zprávu
 
 msgid Message exported to TXT.
 msgstr Zpráva exportována do TXT.
+
+msgid Message edited in {channel}!
+msgstr Zpráva upravena v kanálu {channel}!
+
+msgid Message sent to {channel}!
+msgstr Zpráva odeslána do kanálu {channel}!
 
 msgid (GLOBAL)
 msgstr (GLOBÁLNÍ)

@@ -12,7 +12,7 @@ from pie import i18n, utils, check
 _ = i18n.Translator("modules/sudo").translate
 
 
-class Sudo(commands.GroupCog, name="sudo"):
+class Sudo(commands.GroupCog, name="sudo", description="Perform certain actions as bot."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -51,7 +51,7 @@ class Sudo(commands.GroupCog, name="sudo"):
     # COMMANDS
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @message.command(name="send")
+    @message.command(name="send", description="Send message to the channel as the bot.")
     async def sudo_message_send(
         self,
         inter: discord.Interaction,
@@ -67,7 +67,7 @@ class Sudo(commands.GroupCog, name="sudo"):
         await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @message.command(name="edit")
+    @message.command(name="edit", description="Edit bot's message.")
     async def sudo_message_edit(
         self,
         inter: discord.Interaction,
@@ -93,7 +93,7 @@ class Sudo(commands.GroupCog, name="sudo"):
         await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @message.command(name="resend")
+    @message.command(name="resend", description="Re-sends message as the bot into specified channel.")
     async def sudo_message_resend(
         self,
         inter: discord.Interaction,
@@ -120,7 +120,7 @@ class Sudo(commands.GroupCog, name="sudo"):
         await inter.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
-    @message.command(name="download")
+    @message.command(name="download", description="Exports message content as TXT file.")
     async def sudo_message_download(self, inter: discord.Interaction, message_url: str):
         utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
         dc_message: discord.Message = await self._get_message(utx, inter, message_url)

@@ -48,9 +48,11 @@ class OptionDropdown(discord.ui.Select):
             option = discord.SelectOption(
                 label=db_option.label,
                 description=db_option.description,
-                emoji=rbutils.emoji_decode(bot, db_option.emoji)
-                if db_option.emoji is not None
-                else None,
+                emoji=(
+                    rbutils.emoji_decode(bot, db_option.emoji)
+                    if db_option.emoji is not None
+                    else None
+                ),
                 value=db_option.idx,
             )
             options.append(option)

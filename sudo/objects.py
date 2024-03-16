@@ -2,9 +2,11 @@ from typing import Union
 
 import discord
 
-from pie import i18n
+from pie import i18n, logger
 
 _ = i18n.Translator("modules/sudo").translate
+
+guild_log = logger.Guild.logger()
 
 
 class MessageModal(discord.ui.Modal):
@@ -52,9 +54,16 @@ class MessageModal(discord.ui.Modal):
                 ),
                 ephemeral=True,
             )
+            await guild_log.info(
+                inter.user,
+                inter.channel,
+                "SUDO edited message with ID {} in channel #{}".format(
+                    self.message.id, self.message.channel.name
+                ),
+            )
             return
 
-        await self.channel.send(
+        message: discord.Message = await self.channel.send(
             self.message_input.value,
             allowed_mentions=discord.AllowedMentions(
                 everyone=True, users=True, roles=True
@@ -63,4 +72,12 @@ class MessageModal(discord.ui.Modal):
         await inter.response.send_message(
             _(utx, "Message sent to {channel}!").format(channel=self.channel.mention),
             ephemeral=True,
+        )
+
+        await guild_log.info(
+            inter.user,
+            inter.channel,
+            "SUDO sent message with ID {} in channel #{}".format(
+                message.id, message.channel.name
+            ),
         )

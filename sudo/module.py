@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from pie import i18n, utils, check
 
-_ = i18n.Translator("modules/sudo").translate
+_ = i18n.Translator("modules/fsi").translate
 
 
 class Sudo(
@@ -25,7 +25,7 @@ class Sudo(
     # HELPER FUNCTIONS
 
     async def _get_message(
-        self, utx: i18n.TranslationContext, inter: discord.Interaction, message_url: str
+        self, itx: discord.Interaction, message_url: str
     ):
         try:
             parts = message_url.split("/")
@@ -33,8 +33,8 @@ class Sudo(
             channel_id = int(parts[-2])
             message_id = int(parts[-1])
         except (ValueError, IndexError):
-            await inter.response.send_message(
-                _(utx, "Incorrect message URL!"), ephemeral=True
+            await itx.response.send_message(
+                _(itx, "Incorrect message URL!"), ephemeral=True
             )
             return None
 
@@ -43,8 +43,8 @@ class Sudo(
         )
 
         if dc_message is None:
-            await inter.response.send_message(
-                _(utx, "Message not found or not reachable!"), ephemeral=True
+            await itx.response.send_message(
+                _(itx, "Message not found or not reachable!"), ephemeral=True
             )
             return None
 
@@ -57,51 +57,51 @@ class Sudo(
     @app_commands.describe(channel="Channel to receive the message.")
     async def sudo_message_send(
         self,
-        inter: discord.Interaction,
+        itx: discord.Interaction,
         channel: Union[discord.TextChannel, discord.Thread],
     ):
-        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
         message_modal = MessageModal(
             self.bot,
-            title=_(utx, "Send message"),
-            label=_(utx, "Message content:"),
+            title=_(itx, "Send message"),
+            label=_(itx, "Message content:"),
             channel=channel,
         )
-        await inter.response.send_modal(message_modal)
+        await itx.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
     @message.command(name="edit", description="Edit bot's message.")
     @app_commands.describe(message_url="The URL of the message to edit.")
     async def sudo_message_edit(
         self,
-        inter: discord.Interaction,
+        itx: discord.Interaction,
         message_url: str,
     ):
-        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
-        dc_message: discord.Message = await self._get_message(utx, inter, message_url)
+        dc_message: discord.Message = await self._get_message(itx, message_url)
         if not dc_message:
             return
 
         if dc_message.author != self.bot.user:
-            await inter.response.send_message(
-                _(utx, "Message is not sent by this bot and can't be edited!"),
+            await itx.response.send_message(
+                _(itx, "Message is not sent by this bot and can't be edited!"),
                 ephemeral=True,
             )
             return
 
         if len(dc_message.content) > 2000:
-            await inter.response.send_message(
-                _(utx, "Message content longer than 2000 characters!"), ephemeral=True
+            await itx.response.send_message(
+                _(itx, "Message content longer than 2000 characters!"), ephemeral=True
             )
             return
+        print(_(itx, "Message content:"))
+
         message_modal = MessageModal(
             self.bot,
-            title=_(utx, "Edit message"),
-            label=_(utx, "Message content:"),
+            title=_(itx, "Edit message"),
+            label=_(itx, "Message content:"),
             message=dc_message,
             edit=True,
         )
-        await inter.response.send_modal(message_modal)
+        await itx.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
     @message.command(
@@ -111,37 +111,35 @@ class Sudo(
     @app_commands.describe(message_url="The URL of the message to re-send.")
     async def sudo_message_resend(
         self,
-        inter: discord.Interaction,
+        itx: discord.Interaction,
         channel: Union[discord.TextChannel, discord.Thread],
         message_url: str,
     ):
-        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
-        dc_message: discord.Message = await self._get_message(utx, inter, message_url)
+        dc_message: discord.Message = await self._get_message(itx, message_url)
         if not dc_message:
             return
 
         if len(dc_message.content) > 2000:
-            await inter.response.send_message(
-                _(utx, "Message content longer than 2000 characters!"), ephemeral=True
+            await itx.response.send_message(
+                _(itx, "Message content longer than 2000 characters!"), ephemeral=True
             )
             return
         message_modal = MessageModal(
             self.bot,
-            title=_(utx, "Edit message"),
-            label=_(utx, "Message content:"),
+            title=_(itx, "Edit message"),
+            label=_(itx, "Message content:"),
             message=dc_message,
             channel=channel,
         )
-        await inter.response.send_modal(message_modal)
+        await itx.response.send_modal(message_modal)
 
     @check.acl2(check.ACLevel.SUBMOD)
     @message.command(
         name="download", description="Exports message content as TXT file."
     )
     @app_commands.describe(message_url="The URL of the message to export.")
-    async def sudo_message_download(self, inter: discord.Interaction, message_url: str):
-        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
-        dc_message: discord.Message = await self._get_message(utx, inter, message_url)
+    async def sudo_message_download(self, itx: discord.Interaction, message_url: str):
+        dc_message: discord.Message = await self._get_message(itx, message_url)
 
         if not dc_message:
             return
@@ -155,8 +153,8 @@ class Sudo(
         )
 
         file.seek(0)
-        await inter.response.send_message(
-            _(utx, "Message exported to TXT."),
+        await itx.response.send_message(
+            _(itx, "Message exported to TXT."),
             file=discord.File(fp=file, filename=filename),
             ephemeral=True,
         )

@@ -4,7 +4,7 @@ import discord
 
 from pie import i18n, logger
 
-_ = i18n.Translator("modules/sudo").translate
+_ = i18n.Translator("modules/fsi").translate
 
 guild_log = logger.Guild.logger()
 
@@ -39,8 +39,7 @@ class MessageModal(discord.ui.Modal):
         )
         self.add_item(self.message_input)
 
-    async def on_submit(self, inter: discord.Interaction) -> None:
-        utx = i18n.TranslationContext(inter.guild.id, inter.user.id)
+    async def on_submit(self, itx: discord.Interaction) -> None:
         if self.edit:
             await self.message.edit(
                 content=self.message_input.value,
@@ -48,15 +47,15 @@ class MessageModal(discord.ui.Modal):
                     everyone=True, users=True, roles=True
                 ),
             )
-            await inter.response.send_message(
-                _(utx, "Message edited in {channel}!").format(
+            await itx.response.send_message(
+                _(itx, "Message edited in {channel}!").format(
                     channel=self.message.channel.mention
                 ),
                 ephemeral=True,
             )
             await guild_log.info(
-                inter.user,
-                inter.channel,
+                itx.user,
+                itx.channel,
                 "SUDO edited message with ID {} in channel #{}".format(
                     self.message.id, self.message.channel.name
                 ),
@@ -69,14 +68,14 @@ class MessageModal(discord.ui.Modal):
                 everyone=True, users=True, roles=True
             ),
         )
-        await inter.response.send_message(
-            _(utx, "Message sent to {channel}!").format(channel=self.channel.mention),
+        await itx.response.send_message(
+            _(itx, "Message sent to {channel}!").format(channel=self.channel.mention),
             ephemeral=True,
         )
 
         await guild_log.info(
-            inter.user,
-            inter.channel,
+            itx.user,
+            itx.channel,
             "SUDO sent message with ID {} in channel #{}".format(
                 message.id, message.channel.name
             ),

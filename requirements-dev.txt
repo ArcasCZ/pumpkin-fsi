@@ -5,6 +5,7 @@ black==24.3.0
 flake8==7.0.0
 flake8-print
 flake8-todo
+isort
 
 # pumpkin.py tools
 git+https://github.com/pumpkin-py/pumpkin-tools.git

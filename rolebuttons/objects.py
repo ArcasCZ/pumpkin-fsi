@@ -6,13 +6,7 @@ import discord
 
 from pie import i18n, logger
 
-from .database import (
-    RestrictionType,
-    RBView,
-    RBOption,
-    RBItem,
-)
-
+from .database import RBItem, RBOption, RBView, RestrictionType
 from .utils import RBUtils as rbutils
 
 _ = i18n.Translator("modules/fsi").translate

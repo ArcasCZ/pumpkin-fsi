@@ -4,8 +4,7 @@ import enum
 from typing import List, Optional
 
 import discord
-
-from sqlalchemy import BigInteger, Column, Integer, Boolean, Enum, String, ForeignKey
+from sqlalchemy import BigInteger, Boolean, Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from pie.database import database, session

@@ -1,14 +1,13 @@
 from __future__ import annotations
-import re
 
+import re
 from typing import Union
 
 import discord
-
-from discord import TextChannel, Thread, DMChannel, GroupChannel, PartialMessageable
+from discord import DMChannel, GroupChannel, PartialMessageable, TextChannel, Thread
 from discord.ext import commands
 
-from pie import logger, i18n, utils, database, check
+from pie import check, database, i18n, logger, utils
 
 from .database import SoccerChannel, SoccerIgnored
 

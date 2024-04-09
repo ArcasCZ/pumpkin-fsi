@@ -3,7 +3,7 @@ import re
 import discord
 from discord.ext import commands, tasks
 
-from pie import i18n, logger, utils, check
+from pie import check, i18n, logger, utils
 
 _ = i18n.Translator("modules/fsi").translate
 guild_log = logger.Guild.logger()

@@ -1,13 +1,13 @@
+from typing import Dict, List, Optional, Union
+
 import discord
 from discord.ext import commands, tasks
 
-from typing import Dict, List, Optional, Union
-
-from pie import i18n, logger, utils, check
+from pie import check, i18n, logger, utils
 from pie.utils.objects import ConfirmView, ScrollableEmbed
 
+from .database import DiscordType, RBItem, RBMessage, RBOption, RBView, RestrictionType
 from .objects import RBViewUI
-from .database import RBView, RestrictionType, RBOption, RBItem, DiscordType, RBMessage
 from .utils import RBUtils as rbutils
 
 _ = i18n.Translator("modules/fsi").translate

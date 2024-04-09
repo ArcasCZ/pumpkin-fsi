@@ -3,7 +3,7 @@ from typing import List, Set
 import discord
 from discord.ext import commands
 
-from pie import utils, check, i18n
+from pie import check, i18n, utils
 from pie.utils.objects import ConfirmView, ScrollableEmbed
 
 _ = i18n.Translator("modules/fsi").translate

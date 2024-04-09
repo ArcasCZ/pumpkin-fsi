@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import Optional, List, Dict
-
-from sqlalchemy import BigInteger, Column, Integer, Boolean, or_
-
-from pie.database import database, session
+from typing import Dict, List, Optional
 
 import discord
+from sqlalchemy import BigInteger, Boolean, Column, Integer, or_
+
+from pie.database import database, session
 
 
 class UserTag(database.base):

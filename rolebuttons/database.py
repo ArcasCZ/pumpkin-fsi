@@ -3,9 +3,10 @@ from __future__ import annotations
 import enum
 from typing import List, Optional
 
-import discord
 from sqlalchemy import BigInteger, Boolean, Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
+import discord
 
 from pie.database import database, session
 

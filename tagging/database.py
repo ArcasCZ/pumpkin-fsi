@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional
 
-import discord
 from sqlalchemy import BigInteger, Boolean, Column, Integer, or_
+
+import discord
 
 from pie.database import database, session
 
